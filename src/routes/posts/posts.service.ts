@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+
 import { Post } from 'src/generated/prisma/client';
 import { PrismaService } from 'src/shared/services/prisma/prisma.service';
 
@@ -10,8 +11,12 @@ export class PostsService {
     return this.prismaService.post.findMany();
   }
 
-  findOne(id: string) {
-    return `Post #${id}`;
+  findOne(id: number) {
+    return this.prismaService.post.findUnique({
+      where: {
+        id: id,
+      },
+    });
   }
 
   create(post: Post) {
