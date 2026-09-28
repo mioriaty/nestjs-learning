@@ -25,10 +25,10 @@ class ConfigSchema {
   ACCESS_TOKEN_SECRET: string = '';
 
   @IsString()
-  ACCESS_TOKEN_EXPIRES_IN: string = '';
+  ACCESS_TOKEN_EXPIRES_IN: string = '10h';
 
   @IsString()
-  REFRESH_TOKEN_SECRET: string = '';
+  REFRESH_TOKEN_SECRET: string = '1d';
 
   @IsString()
   REFRESH_TOKEN_EXPIRES_IN: string = '';
