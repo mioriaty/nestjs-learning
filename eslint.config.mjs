@@ -32,6 +32,8 @@ export default tseslint.config(
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/only-throw-error': 'off',
       'prettier/prettier': ['error', { endOfLine: 'auto' }],
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
     },
   },
 );
