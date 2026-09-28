@@ -20,7 +20,7 @@ async function bootstrap() {
         return new UnprocessableEntityException(
           validationErrors.map((error) => ({
             field: error.property,
-            errorMessage: Object.values(error.constraints! || {}).join(', '),
+            error: Object.values(error.constraints! || {}).join(', '),
           })),
         );
       },

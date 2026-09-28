@@ -35,3 +35,5 @@ export class LoginResEntity {
     Object.assign(this, partials);
   }
 }
+
+export class RefreshTokenResEntity extends LoginResEntity {}

@@ -1,6 +1,6 @@
 import { ConflictException, Injectable, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { Prisma } from 'src/generated/prisma/client';
-import { LoginBodyDTO, RegisterBodyDTO } from 'src/routes/auth/auth.dto';
+import { LoginBodyDTO, RefreshTokenBodyDTO, RegisterBodyDTO } from 'src/routes/auth/auth.dto';
 import { HashingService } from 'src/shared/services/hashing/hashing.service';
 import { PrismaService } from 'src/shared/services/prisma/prisma.service';
 import { TokenService } from 'src/shared/services/token/token.service';
@@ -61,6 +61,34 @@ export class AuthService {
     const tokens = await this.generateTokens({ userId: user.id });
 
     return tokens;
+  }
+
+  async refreshToken(body: RefreshTokenBodyDTO) {
+    const { refreshToken } = body;
+
+    try {
+      // verify refresh token
+      const { userId } = await this.tokenService.verifyRefreshToken(refreshToken);
+
+      // check if refresh token exists in database
+      await this.prismaService.refreshToken.findUniqueOrThrow({
+        where: { token: refreshToken },
+      });
+
+      // delete old refresh token
+      await this.prismaService.refreshToken.delete({
+        where: { token: refreshToken },
+      });
+
+      // generate new tokens
+      return await this.generateTokens({ userId });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+        throw new UnauthorizedException('Refresh token has been revoked');
+      }
+
+      throw new UnauthorizedException();
+    }
   }
 
   async generateTokens(payload: { userId: number }) {
