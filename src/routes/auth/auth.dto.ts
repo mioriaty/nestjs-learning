@@ -28,3 +28,5 @@ export class RefreshTokenBodyDTO {
   @IsNotEmpty({ message: 'Refresh token is required' })
   refreshToken!: string;
 }
+
+export class LogoutBodyDTO extends RefreshTokenBodyDTO {}

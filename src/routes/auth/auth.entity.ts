@@ -37,3 +37,11 @@ export class LoginResEntity {
 }
 
 export class RefreshTokenResEntity extends LoginResEntity {}
+
+export class LogoutResEntity {
+  message!: string;
+
+  constructor(partials: Partial<LogoutResEntity>) {
+    Object.assign(this, partials);
+  }
+}

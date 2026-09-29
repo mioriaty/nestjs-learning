@@ -48,6 +48,9 @@ class ConfigSchema {
   @Transform(({ value }) => value === true || value === 'true')
   @IsBoolean()
   DB_SSL_ENABLED: boolean = false;
+
+  @IsString()
+  SECRET_API_KEY: string = '';
 }
 
 const envConfig = plainToInstance(ConfigSchema, process.env);

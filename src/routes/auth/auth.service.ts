@@ -1,5 +1,5 @@
 import { ConflictException, Injectable, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
-import { LoginBodyDTO, RefreshTokenBodyDTO, RegisterBodyDTO } from 'src/routes/auth/auth.dto';
+import { LoginBodyDTO, LogoutBodyDTO, RefreshTokenBodyDTO, RegisterBodyDTO } from 'src/routes/auth/auth.dto';
 import { isRecordNotFoundError, isUniqueConstraintError } from 'src/shared/helpers';
 import { HashingService } from 'src/shared/services/hashing/hashing.service';
 import { PrismaService } from 'src/shared/services/prisma/prisma.service';
@@ -82,6 +82,28 @@ export class AuthService {
 
       // generate new tokens
       return await this.generateTokens({ userId });
+    } catch (error) {
+      if (isRecordNotFoundError(error)) {
+        throw new UnauthorizedException('Refresh token has been revoked');
+      }
+
+      throw new UnauthorizedException();
+    }
+  }
+
+  async logout(body: LogoutBodyDTO) {
+    const { refreshToken } = body;
+
+    try {
+      // verify refresh token
+      await this.tokenService.verifyRefreshToken(refreshToken);
+
+      // delete old refresh token
+      await this.prismaService.refreshToken.delete({
+        where: { token: refreshToken },
+      });
+
+      return { message: 'Logout successful' };
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new UnauthorizedException('Refresh token has been revoked');

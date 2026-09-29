@@ -3,7 +3,7 @@ import { REQUEST_USER_KEY } from '../constants/auth.constant';
 import { TokenService } from '../services/token/token.service';
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class AccessTokenGuard implements CanActivate {
   constructor(private readonly tokenService: TokenService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {

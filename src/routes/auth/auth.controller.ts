@@ -1,8 +1,7 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, SerializeOptions, UseGuards } from '@nestjs/common';
-import { LoginBodyDTO, RefreshTokenBodyDTO, RegisterBodyDTO } from 'src/routes/auth/auth.dto';
-import { LoginResEntity, RefreshTokenResEntity, RegisterResEntity } from 'src/routes/auth/auth.entity';
+import { Body, Controller, HttpCode, HttpStatus, Post, SerializeOptions } from '@nestjs/common';
+import { LoginBodyDTO, LogoutBodyDTO, RefreshTokenBodyDTO, RegisterBodyDTO } from 'src/routes/auth/auth.dto';
+import { LoginResEntity, LogoutResEntity, RefreshTokenResEntity, RegisterResEntity } from 'src/routes/auth/auth.entity';
 import { AuthService } from 'src/routes/auth/auth.service';
-import { AuthGuard } from 'src/shared/guards/required-token.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -19,10 +18,14 @@ export class AuthController {
     return new LoginResEntity(await this.authService.login(body));
   }
 
-  @UseGuards(AuthGuard)
   @Post('refresh-token')
   @HttpCode(HttpStatus.OK)
   async refreshToken(@Body() body: RefreshTokenBodyDTO) {
     return new RefreshTokenResEntity(await this.authService.refreshToken(body));
+  }
+
+  @Post('logout')
+  async logout(@Body() body: LogoutBodyDTO) {
+    return new LogoutResEntity(await this.authService.logout(body));
   }
 }
