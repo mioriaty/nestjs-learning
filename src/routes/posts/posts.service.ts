@@ -1,14 +1,23 @@
 import { Injectable } from '@nestjs/common';
 
-import { Post } from 'src/generated/prisma/client';
+import type { Post as PostType } from 'src/generated/prisma/client';
 import { PrismaService } from 'src/shared/services/prisma/prisma.service';
 
 @Injectable()
 export class PostsService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  findAll() {
-    return this.prismaService.post.findMany();
+  findAll(userId: number) {
+    console.log('userId', userId);
+
+    return this.prismaService.post.findMany({
+      where: { authorId: userId },
+      include: {
+        author: {
+          omit: { password: true },
+        },
+      },
+    });
   }
 
   findOne(id: number) {
@@ -19,17 +28,17 @@ export class PostsService {
     });
   }
 
-  create(post: Post) {
+  create(post: PostType, userId: number) {
     return this.prismaService.post.create({
       data: {
         title: post.title,
         content: post.content,
-        authorId: post.authorId,
+        authorId: userId,
       },
     });
   }
 
-  update(id: string, post: Omit<Post, 'id'>) {
+  update(id: string, post: Omit<PostType, 'id'>) {
     return { id, ...post };
   }
 

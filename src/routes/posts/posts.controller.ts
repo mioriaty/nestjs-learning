@@ -1,8 +1,10 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import type { Post as PostType } from 'src/generated/prisma/client';
 import { AUTH_TYPE, CONDITION_GUARD } from 'src/shared/constants/auth.constant';
+import { ActiveUser } from 'src/shared/decorators/active-user.decorator';
 import { Auth } from 'src/shared/decorators/auth.decorator';
 import { PostsService } from './posts.service';
+import { GetPostItemDTO } from 'src/routes/posts/post.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -11,8 +13,8 @@ export class PostsController {
   // @UseGuards(APIKeyGuard)
   @Auth([AUTH_TYPE.Bearer, AUTH_TYPE.APIKey], { condition: CONDITION_GUARD.OR })
   @Get()
-  findAll() {
-    return this.postsService.findAll();
+  findAll(@ActiveUser('userId') userId: number) {
+    return this.postsService.findAll(userId).then((posts) => posts.map((post) => new GetPostItemDTO(post)));
   }
 
   @Get(':id')
@@ -21,8 +23,9 @@ export class PostsController {
   }
 
   @Post()
-  create(@Body() createPostDto: PostType) {
-    return this.postsService.create(createPostDto);
+  @Auth([AUTH_TYPE.Bearer])
+  create(@Body() createPostDto: PostType, @ActiveUser('userId') userId: number) {
+    return this.postsService.create(createPostDto, userId);
   }
 
   @Put(':id')
