@@ -1,10 +1,9 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
-import type { Post as PostType } from 'src/generated/prisma/client';
+import { CreatePostBodyDTO, DeletePostDTO, GetPostItemDTO, UpdatePostBodyDTO } from 'src/routes/posts/post.dto';
 import { AUTH_TYPE, CONDITION_GUARD } from 'src/shared/constants/auth.constant';
 import { ActiveUser } from 'src/shared/decorators/active-user.decorator';
 import { Auth } from 'src/shared/decorators/auth.decorator';
 import { PostsService } from './posts.service';
-import { GetPostItemDTO } from 'src/routes/posts/post.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -13,28 +12,34 @@ export class PostsController {
   // @UseGuards(APIKeyGuard)
   @Auth([AUTH_TYPE.Bearer, AUTH_TYPE.APIKey], { condition: CONDITION_GUARD.OR })
   @Get()
-  findAll(@ActiveUser('userId') userId: number) {
+  async findAll(@ActiveUser('userId') userId: number) {
     return this.postsService.findAll(userId).then((posts) => posts.map((post) => new GetPostItemDTO(post)));
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number) {
-    return this.postsService.findOne(id);
+  async findOne(@Param('id') id: number) {
+    return new GetPostItemDTO(await this.postsService.findOne(id));
   }
 
   @Post()
   @Auth([AUTH_TYPE.Bearer])
-  create(@Body() createPostDto: PostType, @ActiveUser('userId') userId: number) {
-    return this.postsService.create(createPostDto, userId);
+  async create(@Body() createPostDto: CreatePostBodyDTO, @ActiveUser('userId') userId: number) {
+    return new GetPostItemDTO(await this.postsService.create(createPostDto, userId));
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updatePostDto: PostType) {
-    return this.postsService.update(id, updatePostDto);
+  @Auth([AUTH_TYPE.Bearer])
+  async update(
+    @Param('id') id: number,
+    @Body() updatePostDto: UpdatePostBodyDTO,
+    @ActiveUser('userId') userId: number,
+  ) {
+    return new GetPostItemDTO(await this.postsService.update(id, updatePostDto, userId));
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.postsService.remove(id);
+  @Auth([AUTH_TYPE.Bearer])
+  async remove(@Param('id') id: number, @ActiveUser('userId') userId: number) {
+    return new DeletePostDTO(await this.postsService.remove(id, userId));
   }
 }

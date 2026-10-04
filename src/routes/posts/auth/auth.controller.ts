@@ -1,7 +1,13 @@
 import { Body, Controller, HttpCode, HttpStatus, Post, SerializeOptions } from '@nestjs/common';
-import { LoginBodyDTO, LogoutBodyDTO, RefreshTokenBodyDTO, RegisterBodyDTO } from 'src/routes/auth/auth.dto';
-import { LoginResEntity, LogoutResEntity, RefreshTokenResEntity, RegisterResEntity } from 'src/routes/auth/auth.entity';
-import { AuthService } from 'src/routes/auth/auth.service';
+import { LoginBodyDTO, LogoutBodyDTO, RefreshTokenBodyDTO, RegisterBodyDTO } from 'src/routes/posts/auth/auth.dto';
+import {
+  LoginResEntity,
+  LogoutResEntity,
+  RefreshTokenResEntity,
+  RegisterResEntity,
+} from 'src/routes/posts/auth/auth.entity';
+
+import { AuthService } from 'src/routes/posts/auth/auth.service';
 
 @Controller('auth')
 export class AuthController {

@@ -1,5 +1,6 @@
 import { ConflictException, Injectable, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
-import { LoginBodyDTO, LogoutBodyDTO, RefreshTokenBodyDTO, RegisterBodyDTO } from 'src/routes/auth/auth.dto';
+import { LoginBodyDTO, LogoutBodyDTO, RefreshTokenBodyDTO, RegisterBodyDTO } from 'src/routes/posts/auth/auth.dto';
+
 import { isRecordNotFoundError, isUniqueConstraintError } from 'src/shared/helpers';
 import { HashingService } from 'src/shared/services/hashing/hashing.service';
 import { PrismaService } from 'src/shared/services/prisma/prisma.service';
